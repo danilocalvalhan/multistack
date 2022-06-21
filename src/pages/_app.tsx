@@ -1,11 +1,13 @@
-import "../ui/styles/global.css";
+import "../ui/styles/globals.css";
 import type { AppProps } from "next/app";
-import { ThemeProvider } from "@mui/material/styles";
+import { ThemeProvider } from "@mui/material";
 import tema from "../ui/themes/tema";
+import HeaderGenerator from "../ui/components/header/header";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ThemeProvider theme={tema}>
+      <HeaderGenerator/>
       <Component {...pageProps} />
     </ThemeProvider>
   );
