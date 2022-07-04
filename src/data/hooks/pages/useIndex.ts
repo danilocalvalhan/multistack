@@ -1,30 +1,57 @@
-import { useState } from "react";
+import { AxiosError } from "axios";
+import { useState, useEffect } from "react";
 import { Pets } from "../../@types/pets";
+import { ApiService } from "../../services/apiService";
 
 export function UseIndex(){
-    const [listaPets, setListaPets] = useState(
-        [
-            {
-              id: 1,
-              name: 'Bidu',
-              textHistory: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. At a sunt tempora. Velit vel tenetur maiores esse, temporibus vitae placeat est quis magnam sunt consectetur et nostrum a ullam autem?',
-              image: "https://brazilianpetfoods.com.br/wp-content/uploads/2020/04/dog-885752_1280-1.jpg"
-            },
-            {
-              id: 2,
-              name: 'Dengoso',
-              textHistory: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. At a sunt tempora. Velit vel tenetur maiores esse, temporibus vitae placeat est quis magnam sunt consectetur et nostrum a ullam autem?',
-              image: "https://love.doghero.com.br/wp-content/uploads/2018/12/golden-retriever-1.png"
-            }
-          ]
-    )
+    const [listaPets, setListaPets] = useState<Pets[]>([]),
+          [petSelecionado, setPetSelecionado] = useState<Pets | null>(null),
+          [email, setEmail] = useState(''),
+          [valor, setValor] = useState(''),
+          [mensagem, setMensagem] = useState('');
 
-    const [petSelecionado, setPetSelecionado] = useState<Pets | null>(null);
-    const [email, setEmail] = useState('');
-    const [valor, setValor] = useState('');
-    const [mensagem, setMensagem] = useState('');
+    useEffect(() => {
+      ApiService.get('/pet')
+        .then((resposta) => {
+          setListaPets(resposta.data);
+        })
+    }, [])      
+
+    useEffect(()=>{
+      if (petSelecionado === null){
+        limparFormulario();
+      }
+    }, [petSelecionado])
+
     function Adotar(){
-      return
+      if (petSelecionado !== null){
+        if (validarDadosAdoption()){
+          ApiService.post('/adoption', {
+            pet_id: petSelecionado.id,
+            email: email,
+            valor: valor
+          })
+            .then(() => {
+              setPetSelecionado(null);
+              setMensagem('Pet adotado com sucesso!');
+              limparFormulario();
+            })
+            .catch((error: AxiosError) => {
+              setMensagem(error.response?.data.message);
+            })
+        } else {
+          setMensagem('Preencha todos os campos corretamente');
+        }
+      }
+    }
+
+    function validarDadosAdoption(){  
+      return email.length > 0 && valor.length > 0;
+    }
+
+    function limparFormulario(){
+      setEmail('');
+      setValor('');
     }
 
     return {
