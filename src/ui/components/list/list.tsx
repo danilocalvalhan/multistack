@@ -5,6 +5,7 @@ import { TextService } from "../../../data/services/textService";
 
 interface ListGeneratorProps {
     pet: Pets[];
+    onSelection: (bichinho: Pets) => void;
 }
 
 export default function ListGenerator(props: ListGeneratorProps) {
@@ -20,6 +21,7 @@ export default function ListGenerator(props: ListGeneratorProps) {
                         <Button 
                         variant={'contained'} 
                         fullWidth
+                        onClick={() => props.onSelection(dog)}
                         >Adotar {dog.name}</Button>
                     </DogInformation>
                 </ListElement>
